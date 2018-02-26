@@ -42,48 +42,48 @@ CREATE DATABASE bamazonDB;
 USE bamazonDB;
 CREATE TABLE products(
 	
-	ITEM_ID integer auto_increment,
+	ITEM_ID integer not null auto_increment,
 
-	product_name varchar(250) not null default ' ',
+	product_name varchar(250) not null,
 
-	department_name varchar(250) null,
+	department_name varchar(250) not null,
 
-	price decimal null,
+	price integer (11),
 
-	stock_quantity integer null,
+	stock_quantity integer (11),
 
-	primary key (item_id)
+	primary key (ITEM_ID)
 );
 
 Insert Into products(product_name, department_name, price, stock_quantity)
-Values ("LOL", "28 & under", 3.99, 58);
+Values ("LOL", "28 & under", 4, 58);
 
 Insert Into products(product_name, department_name, price, stock_quantity)
-Values ("LMBO", "28 & under", 2.99, 87);
+Values ("LMBO", "28 & under", 2, 87);
 
 Insert Into products(product_name, department_name, price, stock_quantity)
-Values ("BRB", "28 & under", 1.99, 101);
+Values ("BRB", "28 & under", 3, 101);
 
 Insert Into products(product_name, department_name, price, stock_quantity)
-Values ("Laugh out Loud", "29 & over", .99, 261);
+Values ("Laugh out Loud", "29 & over", 1, 261);
 
 Insert Into products(product_name, department_name, price, stock_quantity)
-Values ("Laugh my butt off", "29 & over", .89, 546);
+Values ("Laugh my butt off", "29 & over", 5, 546);
 
 Insert Into products(product_name, department_name, price, stock_quantity)
-Values ("Be right back", "29 & over", .99, 132);
+Values ("Be right back", "29 & over", 4, 132);
 
 Insert Into products(product_name, department_name, price, stock_quantity)
-Values ("Kickbacks", "28 & under", 16.99, 39);
+Values ("Kickbacks", "28 & under", 17, 39);
 
 Insert Into products(product_name, department_name, price, stock_quantity)
-Values ("Hangout", "29 & over", 29.99, 14);
+Values ("Hangout", "29 & over", 30, 14);
 
 Insert Into products(product_name, department_name, price, stock_quantity)
-Values ("Millie-wop", "28 & under", 99.99, 96);
+Values ("Millie-wop", "28 & under", 100, 96);
 
 Insert Into products(product_name, department_name, price, stock_quantity)
-Values ("A-Town Stomp", "29 & over", 10.99, 233);
+Values ("A-Town Stomp", "29 & over", 11, 233);
 
 
 

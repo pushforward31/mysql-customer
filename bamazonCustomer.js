@@ -16,7 +16,6 @@
 
 var inquirer = require("inquirer");
 var mysql = require("mysql");
-var resArray;
 
 
 var connection = mysql.createConnection({
@@ -38,88 +37,81 @@ connection.connect(function(err) {
 
 function productStuff() {
 
-  var query = connection.query("SELECT * FROM bamazonDB.products", function(err, res) {
+    var query = connection.query("SELECT * FROM bamazonDB.products", function(err, res) {
         console.log(res)
-        // for (var i = 0; i < res.length; i++) {
-        //     resArray.push(res[i].products);
-        // }
-        // return resArray;
-        // console.log(resArray);
         
     });
     //console.log(query.sql)
     stepOne();
 }
 
-function preStep(){
-inquirer.prompt({
-	name: "start",
-	type: "rawlist",
-	message: "Do you want to shop today?",
-	choices: ["Sure do", "Wrong store"]
-})
-.then(function(answer){
+function preStep() {
+    inquirer.prompt({
+            name: "start",
+            type: "rawlist",
+            message: "Do you want to shop today?",
+            choices: ["Sure do", "Wrong store"]
+        })
+        .then(function(answer) {
 
-	if (answer.start === "Sure do"){
-		
-		productStuff();
-	}
-	else{
-		console.log("Make sure you read the sign next time!!!")
-	}
-});
+            if (answer.start === "Sure do") {
+
+                productStuff();
+            } else {
+                console.log("Make sure you read the sign next time!!!")
+            }
+        });
 }
 
 function stepOne() {
 
-   connection.query("SELECT * FROM products", function(err, results) {
+    connection.query("SELECT * FROM products", function(err, results) {
         if (err) throw err;
-
+        console.log("results::::::: " + JSON.stringify(results))
         inquirer.prompt([
-        		{
+
+                {
 
                     name: "ID",
                     type: "rawlist",
-                    choices: function() {
-                        resArray = [];
-                        for (var i = 0; i < results.length; i++) {
-                            resArray.push(results[i].ITEM_ID);
-                        }
-                        return resArray;
-                    },
+                    choices: choices(results),
                     message: "Choose the item_id of the product you want to purchase!"
                 },
                 {
                     name: "item",
                     type: "input",
                     message: "How many pieces of this item would you like?"
-                   
+
                 }
 
             ])
             .then(function(answer) {
+               // console.log("answer::::: " + JSON.stringify(answer));
                 var chosenItem;
+                //console.log(JSON.stringify(results) + "results<<<<<<<<<<<<<<<<<<");
                 for (var i = 0; i < results.length; i++) {
-                    if (results[i].ITEM_ID === answer.ID) {
+                    if (results[i].ITEM_ID.toString() == answer.ID.toString()) {
                         chosenItem = results[i];
                     }
                 }
-
-                if (chosenItem.stock_quanity > parseInt(answer.item)) {
-                    // var newQuantity = parseInt(chosenItem.stock_quanity) - parseInt(answer.item);
-                    // var moneyOwed = answer.item * chosenItem.price;
+                console.log(JSON.stringify(chosenItem) + "<<<<<<<<chosen item<<<<<<<<<");
+                if (JSON.stringify(chosenItem.stock_quantity) >= JSON.stringify(answer.item)) {
+                    console.log(chosenItem.stock_quantity + " >>>>quantity<<<<");
+                    var newQuantity = chosenItem.stock_quantity - answer.item;
+                    var moneyOwed = answer.item * chosenItem.price;
                     connection.query(
                         "UPDATE products SET ? WHERE ?", [{
-                                stock_quantity: answer.item
+                                stock_quantity: newQuantity
                             },
                             {
-                                product_name: chosenItem.product_name
+                                ITEM_ID: chosenItem.ITEM_ID
                             }
                         ],
                         function(error) {
-                            if (error) throw err;
-                            //console.log(res.affectedRows + " products updated!\n");
-                            console.log("We have your order ready, as long you pay your bill of " + moneyOwed);
+                            if (error) // throw err;
+                                //console.log(res.affectedRows + " products updated!\n");
+                                console.log("We have your order ready, as long you pay your bill of " + moneyOwed);
+                            console.log("The store only has " + newQuantity + " remaining in stock!")
                             preStep();
                         }
                     );
@@ -134,5 +126,15 @@ function stepOne() {
 
 
     });
-   connection.end();
+    //connection.end();
+
+    function choices(results) {
+        var resArray = [];
+        for (var i = 0; i < results.length; i++) {
+            var id = results[i].ITEM_ID.toString();
+            resArray.push(id);
+        }
+        return resArray;
+    }
+
 }
