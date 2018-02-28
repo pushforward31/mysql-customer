@@ -39,7 +39,7 @@ function productStuff() {
 
     var query = connection.query("SELECT * FROM bamazonDB.products", function(err, res) {
         console.log(res)
-        
+
     });
     //console.log(query.sql)
     stepOne();
@@ -86,7 +86,7 @@ function stepOne() {
 
             ])
             .then(function(answer) {
-               // console.log("answer::::: " + JSON.stringify(answer));
+                // console.log("answer::::: " + JSON.stringify(answer));
                 var chosenItem;
                 //console.log(JSON.stringify(results) + "results<<<<<<<<<<<<<<<<<<");
                 for (var i = 0; i < results.length; i++) {
@@ -96,7 +96,7 @@ function stepOne() {
                 }
                 console.log(JSON.stringify(chosenItem) + "<<<<<<<<chosen item<<<<<<<<<");
                 if (JSON.stringify(chosenItem.stock_quantity) >= JSON.stringify(answer.item)) {
-                    console.log(chosenItem.stock_quantity + " >>>>quantity<<<<");
+                  //  console.log(chosenItem.stock_quantity + " >>>>quantity<<<<");
                     var newQuantity = chosenItem.stock_quantity - answer.item;
                     var moneyOwed = answer.item * chosenItem.price;
                     connection.query(
@@ -108,33 +108,37 @@ function stepOne() {
                             }
                         ],
                         function(error) {
-                            if (error) // throw err;
+                            if (answer.item > chosenItem.stock_quantity) { // throw err;
                                 //console.log(res.affectedRows + " products updated!\n");
+                                console.log("\nUnfornately we do not have enough in stock");
+                                preStep();
+
+                            } else {
                                 console.log("We have your order ready, as long you pay your bill of " + moneyOwed);
-                            console.log("The store only has " + newQuantity + " remaining in stock!")
-                            preStep();
+                                console.log("The store only has " + newQuantity + " remaining in stock!")
+                                preStep();
+                            }
                         }
                     );
-                } else {
-                    console.log("Unfornately we do not have enough in stock");
-                    preStep();
+                    // } else {
+
+                    // }
+
+
+
                 }
-
-
-
             });
 
 
     });
-    //connection.end();
+} //connection.end();
 
-    function choices(results) {
-        var resArray = [];
-        for (var i = 0; i < results.length; i++) {
-            var id = results[i].ITEM_ID.toString();
-            resArray.push(id);
-        }
-        return resArray;
+function choices(results) {
+    var resArray = [];
+    for (var i = 0; i < results.length; i++) {
+        var id = results[i].ITEM_ID.toString();
+        resArray.push(id);
     }
-
+    return resArray;
 }
+
